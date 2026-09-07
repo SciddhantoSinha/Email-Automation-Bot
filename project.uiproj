@@ -1,0 +1,6 @@
+{
+  "Name": "Email Automation Bot",
+  "ProjectType": "Process",
+  "Description": "Blank Process",
+  "MainFile": "Main.xaml"
+}
