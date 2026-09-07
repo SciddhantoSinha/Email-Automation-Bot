@@ -1,6 +1,6 @@
 # 📧 Email Automation Bot
 
-An automated email processing solution built using **UiPath** and **Microsoft 365 Outlook** that retrieves emails from an Outlook inbox, extracts important email information, downloads email attachments, and generates a structured Excel processing report.
+An automated email processing solution built using **UiPath** and **Microsoft 365 Outlook** that retrieves emails from an Outlook Inbox, extracts important email information, and generates a structured Excel processing report.
 
 
 
@@ -8,9 +8,9 @@ An automated email processing solution built using **UiPath** and **Microsoft 36
 
 The **Email Automation Bot** automates repetitive email-processing tasks using UiPath and Microsoft 365 Outlook integration.
 
-The bot connects to a Microsoft 365 Outlook account, retrieves emails from the Inbox, processes each email individually, downloads available attachments into a designated project folder, and records email information in an Excel report.
+The bot connects to a Microsoft 365 Outlook account, retrieves emails from the Inbox, processes each email individually, extracts relevant email information, stores the results in a DataTable, and generates an Excel report.
 
-This project demonstrates practical **RPA, email automation, Microsoft 365 integration, file handling, DataTable processing, and Excel automation**.
+This project demonstrates practical **RPA, Microsoft 365 integration, email automation, DataTable processing, and Excel automation**.
 
 
 
@@ -18,9 +18,10 @@ This project demonstrates practical **RPA, email automation, Microsoft 365 integ
 
 - Automate retrieval of emails from Microsoft 365 Outlook.
 - Process emails from the Outlook Inbox.
-- Extract sender, subject, and received date/time information.
+- Extract sender information.
+- Extract email subjects.
+- Extract received date and time.
 - Identify whether an email contains attachments.
-- Automatically download email attachments.
 - Store processed email information in a structured DataTable.
 - Generate an Excel report containing the processed email information.
 - Reduce repetitive manual email-processing activities.
@@ -35,8 +36,7 @@ This project demonstrates practical **RPA, email automation, Microsoft 365 integ
 - **UiPath Excel Activities**
 - **DataTable**
 - **VB.NET Expressions**
-- **File and Folder Automation**
-
+- **Excel Automation**
 
 
 ## ⚙️ Workflow
@@ -55,13 +55,10 @@ For Each Email
 Extract Email Information
   ├── Sender
   ├── Subject
-  └── Received Date/Time
+  ├── Received Date/Time
+  └── Attachment Availability
   ↓
-Check for Attachments
-  ↓
-Download Email Attachments
-  ↓
-Add Email Information to DataTable
+Store Information in DataTable
   ↓
 Generate Excel Report
   ↓
@@ -74,7 +71,7 @@ End
 
 ### 1. Connect to Microsoft 365 Outlook
 
-The bot uses the **Microsoft 365 Outlook activities** to establish a connection with the user's Outlook account.
+The bot uses **Microsoft 365 Outlook activities** to establish a connection with the user's Outlook account.
 
 Authentication is handled through the Microsoft 365 connection configured in UiPath.
 
@@ -82,7 +79,7 @@ Authentication is handled through the Microsoft 365 connection configured in UiP
 
 ### 2. Retrieve Emails
 
-The bot retrieves emails from the **Inbox** using the Microsoft 365 Outlook:
+The bot retrieves emails from the **Outlook Inbox** using the Microsoft 365 Outlook:
 
 **Get Email List**
 
@@ -109,19 +106,27 @@ For every email, the bot extracts important information including:
 * Received date/time
 * Attachment availability
 
-The extracted information is stored for reporting.
+The extracted information is then added to the processing DataTable.
 
 
 
-### 5. Download Email Attachments
+### 5. Determine Attachment Availability
 
-The bot uses:
+The bot checks the attachment count of each email.
 
-**Download Email Attachments**
+Emails are classified as:
 
-Attachments associated with the current email are automatically downloaded to the project's attachment storage folder.
+```text
+Attachment Found
+```
 
-This eliminates the need to manually open emails and save attachments individually.
+or
+
+```text
+No Attachment
+```
+
+This information is stored in the **Status** column of the output DataTable.
 
 
 
@@ -137,13 +142,15 @@ is used to temporarily store the processed email information.
 
 The DataTable contains the following columns:
 
-| Column         | Description                           |
-| -------------- | ------------------------------------- |
-| Sender         | Email sender                          |
-| Subject        | Email subject                         |
-| ReceivedTime   | Date/time when the email was received |
-| AttachmentName | Attachment information                |
-| Status         | Attachment processing status          |
+| Column         | Description                                  |
+| -------------- | -------------------------------------------- |
+| Sender         | Email sender address                         |
+| Subject        | Email subject                                |
+| ReceivedTime   | Date/time associated with the email          |
+| AttachmentName | Reserved column for attachment information   |
+| Status         | Indicates whether an attachment was detected |
+
+The current workflow populates the Sender, Subject, ReceivedTime, and Status information.
 
 
 
@@ -152,43 +159,12 @@ The DataTable contains the following columns:
 After processing the emails, the collected information is written to:
 
 ```text
-Output/EmailProcessingResults.xlsx
+Output\EmailProcessingResults.xlsx
 ```
 
 The Excel report provides a structured record of the emails processed by the automation.
 
-
-
-## 📂 Project Structure
-
-```text
-Email Automation Bot/
-│
-├── Attachments/
-│   └── Downloaded email attachments
-│
-├── Attachments_Test/
-│   └── Attachment testing/output folder
-│
-├── Failed/
-│   └── Failed-processing files
-│
-├── Input/
-│   └── Input files, if required
-│
-├── Output/
-│   └── EmailProcessingResults.xlsx
-│
-├── Processed/
-│   └── Processed files
-│
-├── Main.xaml
-├── project.json
-├── project.uiproj
-├── entry-points.json
-└── README.md
-```
-
+The workflow uses a **relative project path** for the output workbook, making the project more portable between compatible environments.
 
 
 ## 📊 Excel Output
@@ -197,7 +173,7 @@ The bot generates an Excel report named:
 
 **EmailProcessingResults.xlsx**
 
-The report provides structured information about the emails processed by the bot.
+The report contains structured information about the emails processed by the bot.
 
 Example:
 
@@ -214,18 +190,17 @@ The project uses several UiPath activities, including:
 
 * **Get Email List**
 * **For Each Email**
-* **Download Email Attachments**
 * **Add Data Row**
 * **Build Data Table**
 * **Write Range Workbook**
 
-These activities work together to automate email retrieval, processing, attachment handling, and reporting.
+These activities work together to retrieve emails, process email information, store results, and generate an Excel report.
 
 
 
 ## 📦 Dependencies
 
-The project uses the following UiPath packages:
+The project uses UiPath activity packages for:
 
 ```text
 UiPath.Excel.Activities
@@ -234,7 +209,7 @@ UiPath.System.Activities
 UiPath.MicrosoftOffice365.Activities
 ```
 
-The required packages are restored automatically when the project is opened in a compatible UiPath Studio environment.
+The required packages can be restored when the project is opened in a compatible UiPath Studio environment.
 
 
 
@@ -247,7 +222,7 @@ Before running the project, make sure you have:
 * UiPath Studio installed.
 * A Microsoft 365 account with Outlook access.
 * Access to the Outlook Inbox that will be processed.
-* Required UiPath packages installed.
+* The required UiPath packages installed.
 * Permission to access Microsoft 365 Outlook through UiPath.
 
 
@@ -259,14 +234,14 @@ Before running the project, make sure you have:
 3. Allow UiPath to restore the required dependencies.
 4. Configure the Microsoft 365 Outlook connection if required.
 5. Verify that the Outlook Inbox is selected.
-6. Ensure the attachment destination folder exists.
-7. Run `Main.xaml`.
-8. Check the `Output` folder for:
+6. Run `Main.xaml`.
+7. After execution, open the `Output` folder.
+8. Open:
 
    ```text
    EmailProcessingResults.xlsx
    ```
-9. Check the attachment output folder for downloaded email attachments.
+9. Review the generated email-processing report.
 
 
 
@@ -292,8 +267,12 @@ The bot retrieves emails directly from Outlook.
 
 The automation produces:
 
-* Downloaded email attachments
-* `EmailProcessingResults.xlsx`
+```text
+Output/
+└── EmailProcessingResults.xlsx
+```
+
+The Excel file contains the structured information collected from the processed emails.
 
 
 
@@ -305,23 +284,28 @@ Automatically retrieves emails from the Outlook Inbox.
 
 ### 🔍 Email Information Extraction
 
-Extracts sender, subject, and received date/time information.
+Extracts:
 
-### 📎 Attachment Automation
-
-Automatically downloads email attachments without requiring manual saving.
+* Sender
+* Subject
+* Received date/time
+* Attachment availability
 
 ### 📊 Excel Reporting
 
-Creates a structured Excel report containing the processed email information.
+Generates a structured Excel report containing the processed email information.
 
-### 🔄 Automated Processing
+### 🔄 Automated Email Processing
 
-Processes multiple emails automatically using a `For Each Email` loop.
+Processes multiple emails automatically using the `For Each Email` activity.
 
 ### 🔗 Microsoft 365 Integration
 
-Uses Microsoft 365 Outlook integration for cloud-based email access.
+Uses Microsoft 365 Outlook integration to access and process emails.
+
+### 🗂️ Structured Data Processing
+
+Uses a DataTable to organize the information extracted from multiple emails before generating the final Excel report.
 
 
 
@@ -330,28 +314,27 @@ Uses Microsoft 365 Outlook integration for cloud-based email access.
 This type of automation can be applied to many business processes, including:
 
 * Recruitment email processing
-* Job application attachment collection
-* Invoice attachment collection
+* Job application email collection
 * Customer support email processing
-* Vendor document collection
-* Purchase order processing
-* Document management
+* Vendor communication processing
+* Document collection
 * Internal communication workflows
 * Automated email reporting
+* Email-based data collection
 
-For example, a recruitment team could use the bot to automatically collect resumes received through email and store them for further processing.
+For example, a recruitment team could use the bot to collect information from job-related emails and generate a structured report for further processing.
 
 
 
 ## 📈 Benefits
 
 * Reduces repetitive manual email processing.
-* Automates attachment downloading.
-* Improves consistency in email data collection.
-* Creates structured email-processing records.
+* Automates email data collection.
+* Improves consistency in email information recording.
 * Reduces manual Excel data entry.
-* Saves time when processing large numbers of emails.
-* Provides a foundation for more advanced intelligent automation workflows.
+* Generates structured reports automatically.
+* Saves time when processing multiple emails.
+* Provides a foundation for more advanced email automation workflows.
 
 
 
@@ -359,15 +342,16 @@ For example, a recruitment team could use the bot to automatically collect resum
 
 The automation can be extended with additional capabilities such as:
 
-* Automatic email categorization.
+* Automatic attachment downloading.
+* Automatic attachment renaming.
+* Subject-based email filtering.
 * Sender-based processing rules.
-* Subject-based filtering.
 * Attachment type filtering.
-* Automatic file renaming.
-* Moving processed emails into dedicated folders.
+* Automatic file organization.
+* Moving processed emails into dedicated Outlook folders.
 * Exception handling and logging.
-* Email notification after processing.
-* Integration with databases.
+* Email notifications after processing.
+* Database integration.
 * AI-based email classification.
 * NLP-based email understanding.
 * Intelligent document processing for email attachments.
@@ -385,10 +369,8 @@ Example:
 screenshots/
 ├── outlook-connection.png
 ├── email-processing-workflow.png
-├── attachment-download.png
 └── excel-output.png
 ```
-
 
 
 ## 🎓 Learning Outcomes
@@ -399,13 +381,11 @@ This project demonstrates practical experience with:
 * UiPath workflow development
 * Microsoft 365 Outlook automation
 * Email processing
-* Attachment automation
 * DataTable manipulation
 * Excel automation
-* File and folder handling
 * VB.NET expressions
-* Cloud application integration
 * Automated reporting
+* Cloud application integration
 
 
 
@@ -413,5 +393,9 @@ This project demonstrates practical experience with:
 
 **Sciddhanto Sinha**
 
- That keeps the GitHub README technically honest and consistent with your other projects.
+GitHub:
+
+**[https://github.com/SciddhantoSinha](https://github.com/SciddhantoSinha)**
+
+---
 ```
